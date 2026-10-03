@@ -1,130 +1,192 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import { page } from '$app/stores';
+  import { tick } from 'svelte';
+  import { navLinks } from '$lib/content/site';
+  import Emblem from './brand/Emblem.svelte';
+  import Wordmark from './brand/Wordmark.svelte';
+  import Icon from './Icon.svelte';
 
-  let isMobileMenuOpen = $state(false);
+  const home = resolve('/');
 
-  // Helper function to check if a link is active.
-  function isActive(path: string) {
-    const currentPath = $page.url.pathname;
-    const resolvedPath = resolve(path as any);
-    if (path === '/') return currentPath === resolvedPath;
-    return currentPath.startsWith(resolvedPath) && resolvedPath !== '/';
+  let isMenuOpen = $state(false);
+  let isScrolled = $state(false);
+  let menuButton: HTMLButtonElement | undefined = $state();
+  let firstMenuLink: HTMLAnchorElement | undefined = $state();
+
+  async function openMenu() {
+    isMenuOpen = true;
+    await tick();
+    firstMenuLink?.focus();
   }
 
-  const toggleMenu = () => {
-    isMobileMenuOpen = !isMobileMenuOpen;
-  };
+  function closeMenu({ restoreFocus = false } = {}) {
+    isMenuOpen = false;
+    if (restoreFocus) menuButton?.focus();
+  }
 
-  const baseLinkClasses = "transition-colors duration-300 font-notoserif text-lg tracking-tight pb-1 border-b-2";
-  const activeLinkClasses = "text-olive-900 border-primary font-semibold";
-  const inactiveLinkClasses = "text-stone-600 border-transparent font-medium hover:text-primary";
+  function onKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && isMenuOpen) closeMenu({ restoreFocus: true });
+  }
+
+  function onScroll() {
+    isScrolled = window.scrollY > 12;
+  }
+
+  // Keep the page from scrolling behind the open mobile menu.
+  $effect(() => {
+    document.documentElement.style.overflow = isMenuOpen ? 'hidden' : '';
+  });
 </script>
 
-<!-- ============ Navbar Bar ============ -->
-<nav class="fixed top-0 w-full z-50 bg-[#fafaf5]/80 backdrop-blur-md shadow-[0_10px_40px_-15px_rgba(26,28,25,0.04)]">
-  <div class="flex justify-between items-center h-20 px-8 max-w-7xl mx-auto">
-    <a href={resolve('/')} class="font-notoserif text-2xl font-bold text-olive-900 tracking-tight">Ann Scarab Yoga</a>
+<svelte:window onkeydown={onKeydown} onscroll={onScroll} />
 
-    <!-- Desktop Links -->
-    <div class="hidden md:flex space-x-12">
-      <a href={resolve('/')} class="{baseLinkClasses} {isActive('/') ? activeLinkClasses : inactiveLinkClasses}">Home</a>
-      <a href={resolve('/about')} class="{baseLinkClasses} {isActive('/about') ? activeLinkClasses : inactiveLinkClasses}">About</a>
-      <a href={resolve('/contact')} class="{baseLinkClasses} {isActive('/contact') ? activeLinkClasses : inactiveLinkClasses}">Contact</a>
-    </div>
+<a
+  href="#main"
+  class="sr-only z-60 rounded-full bg-forest px-5 py-3 font-sans text-sm text-on-forest focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+  >Skip to content</a
+>
 
-    <!-- Right: Book Now + Hamburger -->
-    <div class="flex items-center gap-3">
-      <a
-        href={resolve('/contact')}
-        class="hidden sm:block bg-primary text-on-primary px-6 py-3 rounded-lg font-medium tracking-wide transition-transform scale-95 active:scale-90 shadow-sm hover:shadow-md bg-gradient-to-br from-primary to-primary-container"
-      >
-        Book Now
-      </a>
+<header
+  class="fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow] duration-700"
+  class:scrolled={isScrolled || isMenuOpen}
+>
+  <nav class="container-page flex h-20 items-center justify-between gap-6" aria-label="Main">
+    <a href={home} class="flex min-h-12 items-center gap-3 text-forest" aria-label="Yoga with Ann Scarab — home">
+      <Emblem class="h-9 w-9 shrink-0" />
+      <Wordmark class="h-7 w-auto sm:h-8" />
+    </a>
 
+    <ul class="hidden items-center gap-8 lg:flex">
+      {#each navLinks as link (link.hash)}
+        <li>
+          <a href="{home}#{link.hash}" class="nav-link">{link.label}</a>
+        </li>
+      {/each}
+    </ul>
+
+    <div class="flex items-center gap-2">
+      <a href="{home}#contact" class="book-link hidden sm:inline-flex">Book a Class</a>
       <button
-        onclick={toggleMenu}
-        class="md:hidden flex items-center justify-center w-10 h-10 text-olive-900 focus:outline-none"
-        aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+        bind:this={menuButton}
+        type="button"
+        class="flex h-12 w-12 items-center justify-center rounded-full text-forest lg:hidden"
+        aria-expanded={isMenuOpen}
+        aria-controls="mobile-menu"
+        aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+        onclick={() => (isMenuOpen ? closeMenu() : openMenu())}
       >
-        <span class="material-symbols-outlined text-[2rem]">
-          {isMobileMenuOpen ? 'close' : 'menu'}
-        </span>
+        <Icon name={isMenuOpen ? 'close' : 'menu'} class="h-7 w-7" />
       </button>
     </div>
-  </div>
-</nav>
+  </nav>
+</header>
 
-<!-- ============ Mobile Overlay — OUTSIDE nav to avoid backdrop-filter stacking context ============ -->
-{#if isMobileMenuOpen}
-  <div
-    class="mobile-menu fixed left-0 right-0 z-40"
-    style="top: 5rem;"
-  >
-    <nav class="flex flex-col gap-2 p-8">
+{#if isMenuOpen}
+  <div id="mobile-menu" class="mobile-menu fixed inset-x-0 top-20 bottom-0 z-40 overflow-y-auto lg:hidden">
+    <nav class="container-page flex min-h-full flex-col pt-6 pb-10" aria-label="Mobile">
+      <ul>
+        {#each navLinks as link, i (link.hash)}
+          <li>
+            {#if i === 0}
+              <a bind:this={firstMenuLink} href="{home}#{link.hash}" class="mobile-link" onclick={() => closeMenu()}
+                >{link.label}</a
+              >
+            {:else}
+              <a href="{home}#{link.hash}" class="mobile-link" onclick={() => closeMenu()}>{link.label}</a>
+            {/if}
+          </li>
+        {/each}
+      </ul>
       <a
-        href={resolve('/')}
-        onclick={() => isMobileMenuOpen = false}
-        class="mobile-link {isActive('/') ? 'active' : ''}"
+        href="{home}#contact"
+        class="mt-10 inline-flex min-h-14 items-center justify-center rounded-full bg-forest px-8 font-sans text-sm tracking-[0.2em] text-on-forest uppercase"
+        onclick={() => closeMenu()}>Book a Class</a
       >
-        Home
-      </a>
-      <a
-        href={resolve('/about')}
-        onclick={() => isMobileMenuOpen = false}
-        class="mobile-link {isActive('/about') ? 'active' : ''}"
-      >
-        About
-      </a>
-      <a
-        href={resolve('/contact')}
-        onclick={() => isMobileMenuOpen = false}
-        class="mobile-link {isActive('/contact') ? 'active' : ''}"
-      >
-        Contact
-      </a>
-      <div class="mt-auto pt-8">
-        <a
-          href={resolve('/contact')}
-          onclick={() => isMobileMenuOpen = false}
-          class="block w-full text-center bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-5 rounded-xl font-bold text-xl shadow-lg"
-        >
-          Book Now
-        </a>
-      </div>
     </nav>
   </div>
 {/if}
 
 <style>
+  header.scrolled {
+    background-color: rgb(248 244 235 / 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 1px 0 rgb(44 74 37 / 0.08);
+  }
+
+  .nav-link {
+    position: relative;
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    padding-block: 0.5rem;
+    transition: color 0.4s var(--ease-calm);
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.15rem;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.6s var(--ease-calm);
+  }
+
+  .nav-link:hover {
+    color: var(--color-forest);
+  }
+
+  .nav-link:hover::after {
+    transform: scaleX(1);
+  }
+
+  .book-link {
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 1.4rem;
+    border-radius: 999px;
+    background: var(--color-forest);
+    color: var(--color-on-forest);
+    font-family: var(--font-sans);
+    font-size: 0.74rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    transition: background-color 0.5s var(--ease-calm);
+  }
+
+  .book-link:hover {
+    background: var(--color-forest-deep);
+  }
+
   .mobile-menu {
-    background-color: #fafaf5;
-    border-top: 1px solid #e7e5e4;
-    animation: slideDown 0.25s ease-out;
+    background: var(--color-cream);
+    animation: menu-in 0.45s var(--ease-calm);
   }
 
   .mobile-link {
     display: block;
-    font-family: 'Noto Serif', serif;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--color-line);
+    font-family: var(--font-display);
     font-size: 2rem;
     line-height: 1.2;
-    padding: 0.75rem 0;
-    color: #57534e; /* stone-600 */
-    border-bottom: 1px solid #e7e5e4;
-    transition: color 0.2s;
+    color: var(--color-forest);
   }
 
-  .mobile-link.active {
-    color: var(--color-primary);
-    font-weight: 600;
-  }
-
-  .mobile-link:not(.active):hover {
-    color: var(--color-primary);
-  }
-
-  @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-8px); }
-    to   { opacity: 1; transform: translateY(0); }
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 </style>

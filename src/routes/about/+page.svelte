@@ -1,72 +1,76 @@
 <script lang="ts">
-  import { resolve } from "$app/paths";
-  import Button from "$lib/components/Button.svelte";
-
-  const contactLink = resolve("/contact" as any);
+  import { resolve } from '$app/paths';
+  import { reveal } from '$lib/actions/reveal';
+  import { about, aboutStory } from '$lib/content/site';
+  import { images } from '$lib/content/images';
+  import Seo from '$lib/components/Seo.svelte';
+  import Photo from '$lib/components/Photo.svelte';
+  import SectionHeading from '$lib/components/SectionHeading.svelte';
+  import LotusDivider from '$lib/components/LotusDivider.svelte';
+  import Button from '$lib/components/Button.svelte';
+  import Icon from '$lib/components/Icon.svelte';
 </script>
 
-<svelte:head>
-  <title>About Ann Scarab Yoga</title>
-</svelte:head>
+<Seo
+  title="About Ann | Yoga with Ann Scarab"
+  description="Meet Ann Scarab — a Yoga Alliance–trained teacher of balanced restorative yoga, focused on breath, the spine and balance."
+  path="/about"
+/>
 
-<div class="max-w-7xl mx-auto px-8 py-32 mt-20">
-  <div class="mb-24 text-center">
-    <h1 class="text-5xl font-notoserif text-on-surface tracking-tight mb-4">
-      About Ann
-    </h1>
-    <p
-      class="font-manrope text-sm uppercase tracking-widest text-on-surface-variant font-bold"
-    >
-      The Philosophy
-    </p>
-  </div>
-
-  <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-0">
-    <div
-      class="flex-[5] w-full h-[500px] lg:h-[800px] rounded-3xl overflow-hidden shadow-2xl relative z-[1]"
-    >
-      <img
-        src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=800&auto=format&fit=crop"
-        alt="Ann instructing yoga"
-        class="w-full h-full object-cover"
-      />
+<section class="sunlit pt-36 pb-20 md:pt-44 md:pb-28" aria-labelledby="about-page-title" style="--sun-x: 10%; --sun-y: 0%;">
+  <div class="container-page grid items-center gap-12 lg:grid-cols-12 lg:gap-20">
+    <div class="lg:col-span-6">
+      <SectionHeading level={1} eyebrow="About Ann" title={about.heading} id="about-page-title" />
+      <div use:reveal={150} class="prose-calm mt-8 text-lg sm:text-xl">
+        <p class="font-display text-[1.75rem] leading-snug text-forest italic sm:text-3xl">{about.lead}</p>
+        {#each aboutStory.intro as paragraph, i (i)}
+          <p class="text-ink-muted">{paragraph}</p>
+        {/each}
+      </div>
+      <ul use:reveal={250} class="mt-9 space-y-3 border-t border-line pt-8">
+        {#each about.credentials as item (item)}
+          <li class="flex items-start gap-3 text-[1.0625rem]">
+            <Icon name="sprout" class="mt-1 h-5 w-5 shrink-0 text-sage-deep" />
+            <span>{item}</span>
+          </li>
+        {/each}
+      </ul>
     </div>
 
-    <div
-      class="flex-[7] bg-surface-container-low p-8 md:p-20 rounded-3xl lg:-ml-24 mt-[-6rem] lg:mt-0 relative z-[2] shadow-sm hover:shadow-xl transition-all duration-500"
-    >
-      <p
-        class="text-3xl font-notoserif text-primary mb-8 leading-snug tracking-tighter"
-      >
-        My journey into yoga wasn't about achieving the perfect pose. It was
-        about finding stillness in a loud world.
-      </p>
-
-      <p
-        class="font-manrope text-on-surface-variant mb-6 text-lg leading-relaxed"
-      >
-        I believe that movement is medicinal. Through years of personal practice
-        and intensive study, I've cultivated an approach that focuses heavily on
-        alignment, breath, and profound physiological awareness. I do not run
-        large, crowded classroom studios. My focus is singular: you.
-      </p>
-
-      <p
-        class="font-manrope text-on-surface-variant mb-6 text-lg leading-relaxed"
-      >
-        By working one-on-one or in very small, intimate settings, I can tailor
-        every asana to your body's specific biomechanics. We build a tactile
-        sanctuary—a safe space to explore your edges, release tension, and
-        reclaim your mind-body connection.
-      </p>
-
-      <div class="mt-12">
-        <Button
-          text="Start Your Journey"
-          href={contactLink}
-          variant="primary"
-        />
+    <div use:reveal class="lg:col-span-6">
+      <div class="mx-auto aspect-4/5 max-w-md overflow-hidden rounded-panel">
+        <Photo photo={images.aboutPage} eager sizes="(min-width: 1024px) 28rem, 100vw" />
       </div>
     </div>
   </div>
-</div>
+</section>
+
+<section class="section bg-mist" aria-labelledby="approach-title">
+  <div class="container-page">
+    <SectionHeading title={aboutStory.approachHeading} id="approach-title" align="center" style="caps" />
+    <LotusDivider class="mt-10" />
+    <div use:reveal class="prose-calm mx-auto mt-12 max-w-2xl text-lg text-ink-muted sm:text-xl">
+      {#each aboutStory.approach as paragraph, i (i)}
+        <p>{paragraph}</p>
+      {/each}
+    </div>
+    <p use:reveal class="mx-auto mt-12 max-w-2xl border-t border-forest/15 pt-10 text-center font-display text-2xl leading-snug text-forest italic sm:text-[1.75rem]">
+      {aboutStory.whoFor}
+    </p>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="about-cta-title">
+  <div class="container-page text-center">
+    <SectionHeading
+      title="Begin your practice"
+      intro="Every session is shaped around you. Reach out and Ann will help you take the first gentle step."
+      id="about-cta-title"
+      align="center"
+    />
+    <div use:reveal={150} class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+      <Button href="{resolve('/')}#contact">Book Your Class</Button>
+      <Button href="{resolve('/')}#classes" variant="secondary">Explore Classes</Button>
+    </div>
+  </div>
+</section>

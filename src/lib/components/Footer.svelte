@@ -1,92 +1,65 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
+  import { navLinks, site } from '$lib/content/site';
+  import LogoLockup from './LogoLockup.svelte';
+  import ContactBlock from './ContactBlock.svelte';
+
+  const home = resolve('/');
+  const year = new Date().getFullYear();
 </script>
 
-<footer class="w-full mt-20 bg-stone-100">
-  <div
-    class="grid grid-cols-1 md:grid-cols-3 gap-12 py-16 px-8 max-w-7xl mx-auto border-t border-stone-200/30"
-  >
-    <div>
-      <div class="font-notoserif text-xl font-semibold text-stone-900 mb-6">
-        Ann Scarab Yoga
-      </div>
-      <p
-        class="font-manrope text-sm leading-relaxed text-stone-600 mb-8 max-w-xs"
-      >
-        Rooted in tradition, reaching for the light. Our studio is a space for
-        modern practitioners to find ancient peace.
+<footer class="bg-forest-deep text-on-forest">
+  <div class="container-page grid gap-14 py-20 md:grid-cols-12 md:gap-10 md:py-24">
+    <div class="flex w-fit flex-col items-center md:col-span-5">
+      <a href={home} class="block" aria-label="{site.name} — home">
+        <LogoLockup size="md" class="text-on-forest" />
+      </a>
+      <p class="mt-6 text-center font-sans text-xs tracking-[0.26em] text-on-forest-muted uppercase">
+        {site.subtitle}
       </p>
-      <div class="flex gap-4">
-        <a class="text-stone-500 hover:text-primary transition-colors" href="/"
-          >Instagram</a
-        >
-        <a class="text-stone-500 hover:text-primary transition-colors" href="/"
-          >YouTube</a
-        >
-      </div>
     </div>
-    <div>
-      <h5
-        class="font-bold text-stone-900 mb-6 font-manrope text-sm uppercase tracking-widest"
-      >
-        Navigation
-      </h5>
-      <ul class="space-y-4 font-manrope text-sm text-stone-500">
-        <li>
-          <a class="hover:text-primary transition-all" href={resolve('/')}
-            >Home</a
-          >
-        </li>
-        <li>
-          <a class="hover:text-primary transition-all" href={resolve('/about')}
-            >About Ann</a
-          >
-        </li>
-        <li>
-          <a
-            class="hover:text-primary transition-all"
-            href={resolve('/contact')}>Contact Us</a
-          >
-        </li>
+
+    <nav class="md:col-span-3" aria-label="Footer">
+      <h2 class="eyebrow mb-6 text-on-forest-muted">Explore</h2>
+      <ul class="space-y-3 text-lg">
+        {#each navLinks as link (link.hash)}
+          <li><a class="footer-link" href="{home}#{link.hash}">{link.label}</a></li>
+        {/each}
+        <li><a class="footer-link" href={resolve('/about')}>Ann's Story</a></li>
       </ul>
-    </div>
-    <div>
-      <h5
-        class="font-bold text-stone-900 mb-6 font-manrope text-sm uppercase tracking-widest"
-      >
-        Contact
-      </h5>
-      <p class="font-manrope text-sm text-stone-500 mb-4">
-        11 Mountain Laurel Lane<br />Ellijay, GA, 30536
-      </p>
-      <p class="font-manrope text-sm text-stone-500">
-        <a
-          class="hover:text-primary transition-colors"
-          href="mailto:annscarab@gmail.com">annscarab@gmail.com</a
-        ><br />
-        <a class="hover:text-primary transition-colors" href="tel:+14705649727"
-          >+1 (470) 564-9727</a
-        >
-      </p>
+    </nav>
+
+    <div class="md:col-span-4">
+      <h2 class="eyebrow mb-6 text-on-forest-muted">Contact</h2>
+      <ContactBlock tone="dark" />
     </div>
   </div>
-  <div class="max-w-7xl mx-auto px-8 pb-12">
+
+  <div class="border-t border-white/10">
     <div
-      class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-stone-200/30 font-manrope text-xs text-stone-500 tracking-wide"
+      class="container-page flex flex-col gap-3 py-8 font-sans text-xs tracking-wide text-on-forest-muted md:flex-row md:items-center md:justify-between"
     >
-      <p>© 2026 Ann Scarab Yoga. All rights reserved.</p>
-      <!-- <div class="flex gap-8 mt-4 md:mt-0"> -->
-      <div>
-        <!-- <a class="hover:underline" href="/">Privacy Policy</a>
-        <a class="hover:underline" href="/">Terms of Service</a>
-        <a class="hover:underline" href={resolve('/contact')}>Contact Us</a> -->
-        Developed by Brian Nguyen
-        <span>
-          {'('}<a class="hover:underline" href="https://hoangdesu.com" target="_blank" rel="noreferrer">
-            hoangdesu.com
-          </a>{')'}
-        </span> with 🧡
-      </div>
+      <p>© {year} {site.name}. All rights reserved.</p>
+      <p>
+        Website by Brian Nguyen (<a class="footer-link" href="https://hoangdesu.com" target="_blank" rel="noreferrer"
+          >hoangdesu.com</a
+        >) with 🧡
+      </p>
     </div>
   </div>
 </footer>
+
+<style>
+  .footer-link {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.3em;
+    transition: text-decoration-color 0.4s var(--ease-calm), color 0.4s var(--ease-calm);
+  }
+
+  .footer-link:hover {
+    color: var(--color-on-forest);
+    text-decoration-color: currentColor;
+  }
+</style>

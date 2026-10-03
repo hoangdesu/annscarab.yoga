@@ -1,330 +1,350 @@
-<!-- HomePage -->
-
+<!--
+  Homepage — a calm journey:
+  Ann → Breath → Therapeutic Yoga → Why Breath Matters → Classes → Gallery → Contact
+-->
 <script lang="ts">
-  import { resolve } from "$app/paths";
-  import Button from "$lib/components/Button.svelte";
+  import { asset, resolve } from '$app/paths';
+  import { reveal } from '$lib/actions/reveal';
+  import {
+    about,
+    benefits,
+    breath,
+    classes,
+    contact,
+    contactSection,
+    gallery,
+    mapsLink,
+    site,
+    therapeutic
+  } from '$lib/content/site';
+  import { galleryPhotos, images } from '$lib/content/images';
+  import Seo from '$lib/components/Seo.svelte';
+  import Hero from '$lib/components/Hero.svelte';
+  import Photo from '$lib/components/Photo.svelte';
+  import SectionHeading from '$lib/components/SectionHeading.svelte';
+  import ServiceCard from '$lib/components/ServiceCard.svelte';
+  import ClassCard from '$lib/components/ClassCard.svelte';
+  import Gallery from '$lib/components/Gallery.svelte';
+  import ContactBlock from '$lib/components/ContactBlock.svelte';
+  import LotusDivider from '$lib/components/LotusDivider.svelte';
+  import Button from '$lib/components/Button.svelte';
+  import ContactForm from '$lib/components/ContactForm.svelte';
+  import Icon from '$lib/components/Icon.svelte';
+  import PropIcon from '$lib/components/PropIcon.svelte';
 
-  const heroImage = resolve("/images/hero.jpg" as any);
+  const mapsEmbed = `https://www.google.com/maps?q=${encodeURIComponent(contact.address)}&output=embed`;
+
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: site.name,
+    description: site.description,
+    url: site.url,
+    image: new URL(site.ogImage, site.url).href,
+    email: contact.email,
+    telephone: '+1-470-564-9727',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: contact.addressLines[0],
+      addressLocality: 'Ellijay',
+      addressRegion: 'GA',
+      postalCode: '30536',
+      addressCountry: 'US'
+    }
+  };
 </script>
 
+<Seo />
+
 <svelte:head>
-  <title>Ann Scarab Yoga | Find Your Balance</title>
-  <meta name="description" content="Find your balance at Ann Scarab Yoga. A boutique sanctuary designed to ground your practice in nature’s rhythm. Experience intentional movement in a space crafted for silence and soul." />
-
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://annscarab.yoga/" />
-  <meta property="og:title" content="Ann Scarab Yoga | Holistic Wellness & Yoga Studio" />
-  <meta property="og:description" content="Find your balance at Ann Scarab Yoga. A boutique sanctuary designed to ground your practice in nature’s rhythm. Experience intentional movement in a space crafted for silence and soul." />
-  <meta property="og:image" content="https://annscarab.yoga/images/hero.jpg" />
-
-  <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content="https://annscarab.yoga/" />
-  <meta property="twitter:title" content="Ann Scarab Yoga | Holistic Wellness & Yoga Studio" />
-  <meta property="twitter:description" content="Find your balance at Ann Scarab Yoga. A boutique sanctuary designed to ground your practice in nature’s rhythm. Experience intentional movement in a space crafted for silence and soul." />
-  <meta property="twitter:image" content="https://annscarab.yoga/images/hero.jpg" />
+  {@html `<script type="application/ld+json">${JSON.stringify(structuredData)}</script>`}
 </svelte:head>
 
-<section
-  class="relative min-h-[921px] flex items-center px-8 overflow-hidden pt-20"
->
-  <div
-    class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
-  >
-    <div class="lg:col-span-5 z-10">
-      <span
-        class="font-manrope text-xs tracking-[0.2em] uppercase text-primary font-bold mb-4 block mt-8 lg:mt-0"
-        >Est. 2025 • Organic Wellness</span
-      >
-      <h1
-        class="font-notoserif text-6xl md:text-7xl lg:text-8xl leading-[1.1] text-on-surface mb-8 tracking-tighter"
-      >
-        Find Your <br /><span class="italic text-primary">Balance</span>
-      </h1>
-      <p
-        class="font-manrope text-lg text-on-surface-variant max-w-md mb-10 leading-relaxed"
-      >
-        A boutique sanctuary designed to ground your practice in nature’s
-        rhythm. Experience intentional movement in a space crafted for silence
-        and soul.
-      </p>
-      <div class="hidden lg:flex flex-col sm:flex-row gap-4">
-        <!-- Using explicit button to maintain exact reference padding/size -->
-        <button
-          class="bg-primary text-on-primary px-10 py-5 cursor-pointer rounded-lg font-semibold text-lg hover:shadow-xl transition-all bg-gradient-to-br from-primary to-primary-container"
-        >
-          Book a Class
-        </button>
+<Hero />
+
+<!-- ───────── About Ann ───────── -->
+<section id="about" class="section bg-paper" aria-labelledby="about-title">
+  <div class="container-page relative grid items-center gap-12 lg:grid-cols-12 lg:gap-20">
+    <div use:reveal class="lg:col-span-6">
+      <div class="aspect-4/3 overflow-hidden rounded-panel">
+        <Photo photo={images.about} sizes="(min-width: 1024px) 48vw, 100vw" />
       </div>
     </div>
 
-    <!-- Image section in its own div to manage grid/flow -->
-    <div class="lg:col-span-7 relative flex flex-col items-center lg:items-end">
-      <div
-        class="w-11/12 lg:w-10/12 aspect-[4/5] rounded-[2rem] overflow-hidden shadow-2xl transform lg:rotate-2 lg:translate-x-12 scale-95 lg:scale-90"
-      >
-        <img
-          alt="Yoga in nature"
-          class="w-full h-full object-cover"
-          src={heroImage}
-        />
+    <div class="lg:col-span-6">
+      <SectionHeading eyebrow="Meet Ann" title={about.heading} id="about-title" />
+      <div use:reveal={150} class="prose-calm mt-8 text-lg sm:text-xl">
+        <p class="font-display text-[1.75rem] leading-snug text-forest italic sm:text-3xl">{about.lead}</p>
+        {#each about.body as paragraph, i (i)}
+          <p class="text-ink-muted">{paragraph}</p>
+        {/each}
       </div>
-      
-      <!-- Mobile-only button after the image -->
-      <div class="flex lg:hidden mt-12 w-full px-4">
-        <button
-          class="bg-primary text-on-primary w-full py-5 cursor-pointer rounded-lg font-semibold text-lg hover:shadow-xl transition-all bg-gradient-to-br from-primary to-primary-container"
-        >
-          Book a Class
-        </button>
+      <ul use:reveal={250} class="mt-9 space-y-3 border-t border-line pt-8">
+        {#each about.credentials as item (item)}
+          <li class="flex items-start gap-3 text-[1.0625rem]">
+            <Icon name="sprout" class="mt-1 h-5 w-5 shrink-0 text-sage-deep" />
+            <span>{item}</span>
+          </li>
+        {/each}
+      </ul>
+      <div use:reveal={300} class="mt-10">
+        <Button href={resolve('/about')} variant="text">
+          Read Ann's story <Icon name="arrow" class="h-4 w-4" />
+        </Button>
       </div>
-
-      <!-- Decorative Element -->
-      <div
-        class="absolute -bottom-10 -left-10 w-64 h-64 bg-secondary-container rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"
-      ></div>
     </div>
   </div>
 </section>
 
-<!-- Featured Classes (Bento Style Cards) -->
-<section class="py-32 px-8 bg-surface-container-low">
-  <div class="max-w-7xl mx-auto">
-    <div class="flex flex-col md:flex-row md:items-end justify-between mb-20">
-      <div class="max-w-xl">
-        <h2 class="font-notoserif text-4xl md:text-5xl mb-6 text-on-surface">
-          Curated Movement
-        </h2>
-        <p class="font-manrope text-lg text-on-surface-variant">
-          Whether you seek a rigorous flow or a deep stillness, our classes are
-          tailored to ground your energy and elevate your spirit.
-        </p>
+<!-- ───────── Breath is the First Medicine ───────── -->
+<section id="breath" class="section sunlit" aria-labelledby="breath-title" style="--sun-x: 25%; --sun-y: 0%;">
+  <div class="container-page grid items-center gap-12 lg:grid-cols-12 lg:gap-20">
+    <div use:reveal class="lg:order-2 lg:col-span-5">
+      <div class="mx-auto aspect-4/5 max-w-md overflow-hidden rounded-panel lg:max-w-none">
+        <Photo photo={images.breath} sizes="(min-width: 1024px) 38vw, 28rem" />
+      </div>
+    </div>
+
+    <div class="lg:order-1 lg:col-span-7">
+      <div use:reveal class="breath-orb mb-10" aria-hidden="true"><span></span></div>
+      <SectionHeading eyebrow="Breath" title={breath.heading} id="breath-title" />
+      <div use:reveal={150} class="prose-calm mt-8 text-lg sm:text-xl">
+        <p class="font-display text-[1.75rem] leading-snug text-forest italic sm:text-3xl">{breath.lead}</p>
+        {#each breath.body as paragraph, i (i)}
+          <p class="text-ink-muted">{paragraph}</p>
+        {/each}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── Therapeutic Yoga ───────── -->
+<section id="therapeutic-yoga" class="section bg-mist" aria-labelledby="therapeutic-title">
+  <div class="container-page relative">
+    <SectionHeading
+      eyebrow="Gentle, supported practice"
+      title={therapeutic.heading}
+      intro={therapeutic.intro}
+      id="therapeutic-title"
+      align="center"
+    />
+
+    <div class="mt-16 grid gap-10 lg:mt-20 lg:grid-cols-12 lg:gap-12">
+      <div use:reveal class="lg:col-span-5">
+        <div class="aspect-4/3 overflow-hidden rounded-panel lg:sticky lg:top-28 lg:aspect-5/6">
+          <Photo photo={images.therapeutic} sizes="(min-width: 1024px) 40vw, 100vw" />
+        </div>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-2 lg:col-span-7">
+        {#each therapeutic.services as service, i (service.title)}
+          <ServiceCard {...service} delay={(i % 2) * 120} />
+        {/each}
+      </div>
+    </div>
+
+    <p use:reveal class="mx-auto mt-14 max-w-2xl text-center font-sans text-sm leading-relaxed text-ink-muted">
+      {therapeutic.note}
+    </p>
+  </div>
+</section>
+
+<!-- ───────── Why Breath Matters ───────── -->
+<section id="why-breath" class="section sunlit" aria-labelledby="why-breath-title" style="--sun-x: 90%; --sun-y: 20%;">
+  <div class="container-page">
+    <SectionHeading eyebrow="Everyday well-being" title={benefits.heading} intro={benefits.intro} id="why-breath-title" />
+
+    <ul class="mt-16 grid gap-x-12 sm:grid-cols-2 lg:grid-cols-3">
+      {#each benefits.items as item, i (item.title)}
+        <li use:reveal={(i % 3) * 120} class="border-t border-line py-8">
+          <Icon name={item.icon ?? 'sprout'} class="mb-4 h-10 w-10 text-sage-deep" />
+          <h3 class="text-[1.7rem]">{item.title}</h3>
+          <p class="mt-3 text-[1.0625rem] text-ink-muted">{item.description}</p>
+        </li>
+      {/each}
+    </ul>
+  </div>
+</section>
+
+<!-- ───────── Classes ───────── -->
+<section id="classes" class="section bg-linen" aria-labelledby="classes-title">
+  <div class="container-page">
+    <SectionHeading
+      eyebrow="Classes"
+      title={classes.heading}
+      intro={classes.intro}
+      id="classes-title"
+      align="center"
+      style="caps"
+    />
+    <LotusDivider class="mt-12" />
+
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {#each classes.items as item, i (item.title)}
+        <ClassCard {...item} index={i} delay={(i % 3) * 120} />
+      {/each}
+    </div>
+
+    <!-- Focus areas, beside the watercolour lotus from the brochure -->
+    <div use:reveal class="lotus-panel mt-16 grid items-center gap-6 rounded-panel px-6 py-10 sm:px-10 md:grid-cols-2 md:gap-10 md:py-12">
+      <img
+        src={asset('/images/decor/lotus-pond.webp')}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        decoding="async"
+        width="517"
+        height="700"
+        class="mx-auto w-40 sm:w-52 md:order-2 md:w-64"
+      />
+      <div class="text-center md:order-1 md:text-left">
+        <h3 class="caps-heading text-xl sm:text-2xl">{classes.focusHeading}</h3>
+        <ul class="mt-6 inline-grid gap-3 text-left">
+          {#each classes.focus as item (item)}
+            <li class="flex items-center gap-3 text-lg">
+              <Icon name="sprout" class="h-[1.1rem] w-[1.1rem] shrink-0 text-sage-deep" />{item}
+            </li>
+          {/each}
+        </ul>
+      </div>
+    </div>
+
+    <LotusDivider class="mt-16" />
+
+    <!-- Supportive props, drawn from the brochure -->
+    <div use:reveal class="mt-16">
+      <div class="mx-auto max-w-2xl text-center">
+        <h3 class="caps-heading text-xl sm:text-2xl">{classes.propsHeading}</h3>
+        <p class="mt-4 text-lg text-ink-muted">{classes.propsIntro}</p>
+      </div>
+      <ul class="props mt-10 grid grid-cols-2 overflow-hidden rounded-panel border border-forest/10 sm:grid-cols-4 lg:grid-cols-8">
+        {#each classes.props as prop (prop.icon)}
+          <li class="prop flex flex-col items-center px-3 py-8 text-center">
+            <PropIcon name={prop.icon} class="prop-icon h-14 w-auto max-w-[5.5rem] text-forest" />
+            <span class="mt-4 text-base leading-snug">{prop.label}</span>
+          </li>
+        {/each}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── Gallery ───────── -->
+<section id="gallery" class="section" aria-labelledby="gallery-title">
+  <div class="container-page">
+    <SectionHeading eyebrow="Forest · Flowers · Practice" title={gallery.heading} intro={gallery.intro} id="gallery-title" />
+    <div class="mt-14 lg:mt-20">
+      <Gallery photos={galleryPhotos} />
+    </div>
+  </div>
+</section>
+
+<!-- ───────── Contact / Booking ───────── -->
+<section id="contact" class="section bg-paper" aria-labelledby="contact-title">
+  <div class="container-page relative grid gap-14 lg:grid-cols-12 lg:gap-16">
+    <div class="lg:col-span-7">
+      <SectionHeading eyebrow="Contact & booking" title={contactSection.heading} intro={contactSection.intro} id="contact-title" />
+      <div use:reveal={150} class="mt-10">
+        <ContactForm />
+      </div>
+    </div>
+
+    <div use:reveal={200} class="lg:col-span-5">
+      <div class="overflow-hidden rounded-panel border border-forest/10 bg-linen">
+        <iframe
+          class="block aspect-4/3 w-full"
+          src={mapsEmbed}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Map showing {contact.address}"
+        ></iframe>
       </div>
       <a
-        class="mt-8 md:mt-0 inline-flex items-center gap-2 text-primary font-bold hover:underline decoration-2 underline-offset-8"
-        href="/"
+        href={mapsLink}
+        target="_blank"
+        rel="noreferrer"
+        class="mt-2 inline-flex min-h-11 items-center gap-2 font-sans text-xs tracking-[0.2em] text-forest uppercase underline-offset-4 hover:underline"
+        >Open in Google Maps <Icon name="arrow" class="h-4 w-4" /></a
       >
-        View all styles <span class="material-symbols-outlined">north_east</span
-        >
-      </a>
-    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <!-- Vinyasa Card -->
-      <div
-        class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500"
-      >
-        <div class="aspect-video overflow-hidden">
-          <img
-            alt="Vinyasa Flow"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqcrZEuCBTXHEvqCroVpBu63TxyRl8IsY0BW87kvDXwqDokFRpA9Jk0uFlauWxjR12sn4A1qEKqu3syJ0IdUJfAeWOg7xNwY30NxubyTAfCt2GKenFZI8gp2qxPx5zh6aCpd0oGJuW7pTz2MZbuu7Dhe7zdynvBcNWW3xWDPV08NX2EuvNAadzD4Mt6QcbBh0EX2T0SBnQrWwVpLNzM_sV2IX4DRrqPNz-hkhXtvquvOMLRAhn6JPmdX7Rtr-XsWejDHFPFCBfY4I"
-          />
-        </div>
-        <div class="p-8">
-          <h3 class="font-notoserif text-2xl mb-3 text-on-surface">
-            Vinyasa Flow
-          </h3>
-          <p class="font-manrope text-on-surface-variant mb-6 leading-relaxed">
-            A rhythmic, breath-led sequence designed to build heat and fluid
-            mobility throughout the body.
-          </p>
-          <span
-            class="text-sm font-bold tracking-widest text-secondary uppercase"
-            >Level: Intermediate</span
-          >
-        </div>
+      <div class="mt-10 border-t border-line pt-10">
+        <ContactBlock />
       </div>
 
-      <!-- Hatha Card -->
-      <div
-        class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500"
-      >
-        <div class="aspect-video overflow-hidden">
-          <img
-            alt="Hatha Yoga"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAXsnzC5a_dHGTtetzX6GSqgCIlmsCuCqBpb4OKZG8ZANoj4_ObHAWY45UmmGW6AdMiBwEqfH6k2mdEed50ZiVKYSzVyzyxxDg9xo4KbcaXZ0qmAAKSgB4koBEoBjgBRWFg6WIoAfu4fqyzUc8NwZtnW5EWbVHgNTS-mAITXXxcNsj4MnviV-nBv5ZchaJ9jmPv_3s5wWWZQiDJb1tFrKoG8rTAqLMTVRsCw_UiewwGpD3oaingoT3W9jwEMT1fnooG38PKQD_6Bs"
-          />
-        </div>
-        <div class="p-8">
-          <h3 class="font-notoserif text-2xl mb-3 text-on-surface">
-            Hatha Yoga
-          </h3>
-          <p class="font-manrope text-on-surface-variant mb-6 leading-relaxed">
-            Focus on foundational alignment and mindful breathing to bring
-            balance to the mind and body.
-          </p>
-          <span
-            class="text-sm font-bold tracking-widest text-secondary uppercase"
-            >Level: All Levels</span
-          >
-        </div>
-      </div>
-
-      <!-- Restorative Card -->
-      <div
-        class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500"
-      >
-        <div class="aspect-video overflow-hidden">
-          <img
-            alt="Restorative Yoga"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGoH5rH2TyTbcxf3f67pcfB_I-TrIFrp21cCROU10WteWFjhVHe6RJ3vtWYqdDEi0b6l_BTGSkbdfY_RPCC0De2T0RB7qVqDsdW3mBADkuKwucqlT3S2TUxidEyUctUmfmRvB4iozrOJLbUDvCvR9B0FS4wZ_JM7BjBEjVq819lOFxf5CmRC2DQoL1oue82MOvfQxj_tt_OiFk6hLI3Si8YUX0KBVoZiebtTKOPei6dXkOOfBxCaVcrFbdqF-QTUP4MGdljLaAp6w"
-          />
-        </div>
-        <div class="p-8">
-          <h3 class="font-notoserif text-2xl mb-3 text-on-surface">
-            Restorative
-          </h3>
-          <p class="font-manrope text-on-surface-variant mb-6 leading-relaxed">
-            Deeply healing practice using props to support long-held poses,
-            inviting profound nervous system release.
-          </p>
-          <span
-            class="text-sm font-bold tracking-widest text-secondary uppercase"
-            >Level: Gentle</span
-          >
-        </div>
-      </div>
+      <ul class="mt-10 flex flex-wrap gap-x-6 gap-y-2 font-sans text-xs tracking-[0.18em] text-sage-deep uppercase">
+        {#each contact.sessions as item (item)}
+          <li class="flex items-center gap-2"><Icon name="sprout" class="h-4 w-4" />{item}</li>
+        {/each}
+      </ul>
     </div>
   </div>
 </section>
 
-<!-- Why Choose Us - Asymmetric Layout -->
-<section class="py-40 px-8">
-  <div
-    class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-24 items-center"
-  >
-    <div class="relative order-2 lg:order-1">
-      <div
-        class="w-full h-[600px] bg-surface-variant rounded-full overflow-hidden relative"
-      >
-        <img
-          alt="Instructor guiding student"
-          class="w-full h-full object-cover mix-blend-multiply grayscale hover:grayscale-0 transition-all duration-700"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBojqFp4FHzbyUtl28qoI4QL2TCB3JBvjPWNE--Bfkheka3tcmJ-FYdg-g1Klapyf85QO_xscJpDlLBt0bzYysX_nfJwr47S1pD55Vxjarkiqka-POHVoN5zttNfjhAqaE9vHydMlICoYNMD67nsUdjPloMNlyfwvpKQ77ItSQfwxgwiv5YyaIh2cWRxzSgxUfmcITrCBcyeRSkWHK_6Lc1wdQPd1j7saIgdaTunciGrW_OKHPhHNuDObkhyySzcLwH1srnJXGqO4o"
-        />
-      </div>
-      <div
-        class="absolute -top-12 -right-4 lg:-right-12 p-8 bg-tertiary-fixed rounded-2xl shadow-xl max-w-[calc(100vw-4rem)] sm:max-w-xs transform rotate-3"
-      >
-        <p
-          class="font-notoserif italic text-on-tertiary-fixed text-lg leading-relaxed"
-        >
-          "The space feels like a second home. The intentionality in every
-          detail is truly healing."
-        </p>
-        <p
-          class="mt-4 font-manrope font-bold text-sm uppercase tracking-widest text-tertiary"
-        >
-          Sarah J., Member
-        </p>
-      </div>
-    </div>
+<style>
+  /* Hairline grid between the prop illustrations, like the brochure panel. */
+  .props {
+    gap: 1px;
+    background: rgb(44 74 37 / 0.1);
+  }
 
-    <div class="order-1 lg:order-2">
-      <h2
-        class="font-notoserif text-4xl md:text-5xl mb-12 text-on-surface leading-tight"
-      >
-        Beyond the Mat, <br />A Sacred Community
-      </h2>
-      <div class="space-y-12">
-        <div class="flex gap-6">
-          <div
-            class="flex-shrink-0 w-12 h-12 bg-primary-container rounded-full flex items-center justify-center"
-          >
-            <span
-              class="material-symbols-outlined text-on-primary-container"
-              style="font-variation-settings: 'FILL' 1;">spa</span
-            >
-          </div>
-          <div>
-            <h4 class="font-manrope font-bold text-xl mb-2">
-              Sustainable Philosophy
-            </h4>
-            <p class="font-manrope text-on-surface-variant leading-relaxed">
-              We utilize eco-friendly materials and carbon-neutral studio
-              operations to ensure our practice honors the earth as much as our
-              bodies.
-            </p>
-          </div>
-        </div>
+  .prop {
+    background: var(--color-linen);
+    cursor: default;
+    transition: background-color 0.6s var(--ease-calm);
+  }
 
-        <div class="flex gap-6">
-          <div
-            class="flex-shrink-0 w-12 h-12 bg-secondary-container rounded-full flex items-center justify-center"
-          >
-            <span
-              class="material-symbols-outlined text-on-secondary-container"
-              style="font-variation-settings: 'FILL' 1;">groups</span
-            >
-          </div>
-          <div>
-            <h4 class="font-manrope font-bold text-xl mb-2">
-              Small Group Focus
-            </h4>
-            <p class="font-manrope text-on-surface-variant leading-relaxed">
-              Intimate class sizes ensure personalized guidance and hands-on
-              adjustments from our world-class instructors.
-            </p>
-          </div>
-        </div>
+  .prop :global(.prop-icon) {
+    transition: transform 0.6s var(--ease-calm);
+  }
 
-        <div class="flex gap-6">
-          <div
-            class="flex-shrink-0 w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center"
-          >
-            <span
-              class="material-symbols-outlined text-on-surface-variant"
-              style="font-variation-settings: 'FILL' 1;">verified_user</span
-            >
-          </div>
-          <div>
-            <h4 class="font-manrope font-bold text-xl mb-2">Expert Pedagogy</h4>
-            <p class="font-manrope text-on-surface-variant leading-relaxed">
-              Our teachers are lifelong students with over 500+ hours of
-              advanced certification in diverse lineages.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+  /* A barely-there tint and lift as the pointer rests on a prop. */
+  .prop:hover {
+    background: #f3ede2;
+  }
 
-<!-- Newsletter CTA / Glassmorphism -->
-<section class="py-24 px-8">
-  <div
-    class="max-w-5xl mx-auto rounded-[3rem] bg-stone-900 overflow-hidden relative p-12 md:p-24 text-center"
-  >
-    <div class="absolute inset-0 opacity-20">
-      <img
-        alt="Texture background"
-        class="w-full h-full object-cover"
-        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBobp6NdYKVBxMqDgytS5bfnveLHDxWyPkiaiKjhB1Tiilt0ZW86Nckgzf5HNghgMygLyWLTyZYHoYKsxppWp6ellOGFK7Ye9wBOsUS-tJBbW2GR1lSnMQdyHasHXLP0WriNCorVUwBUr-Qe8m6FoVco2wftWvlwDjf7RAeBCxpXwbB7efAhGed_GYvSzR_LYscnKidHtEi5rFBj9leQfp7U_9eXgRBjkE8bPw3UhCkl3MzFYsuIVNauIjWhtJAJbHWkN2h0_14yO4"
-      />
-    </div>
-    <div class="relative z-10">
-      <h2 class="font-notoserif text-4xl md:text-5xl text-white mb-6">
-        Begin Your Journey
-      </h2>
-      <p class="text-stone-300 font-manrope text-lg mb-12 max-w-xl mx-auto">
-        Join our community newsletter for mindful insights, studio updates, and
-        15% off your first class pack.
-      </p>
-      <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
-        <input
-          class="flex-grow bg-white/10 border-none rounded-lg px-6 py-4 text-white placeholder:text-stone-500 focus:ring-2 focus:ring-primary-container outline-none transition-all"
-          placeholder="Your email address"
-          type="email"
-        />
-        <button
-          class="bg-primary-container text-on-primary-container px-8 py-4 rounded-lg font-bold hover:bg-inverse-primary transition-colors"
-          >Subscribe</button
-        >
-      </form>
-    </div>
-  </div>
-</section>
+  @media (prefers-reduced-motion: no-preference) {
+    .prop:hover :global(.prop-icon) {
+      transform: translateY(-2px) scale(1.04);
+    }
+  }
+
+  /* Soft cream wash behind the lotus, like the brochure's pond panel. */
+  .lotus-panel {
+    background: radial-gradient(120% 90% at 75% 50%, rgb(232 234 220 / 0.85), rgb(248 244 235 / 0.4) 70%);
+  }
+
+  /* A small circle that slowly expands and settles, at the pace of a calm breath. */
+  .breath-orb {
+    width: 3.5rem;
+    height: 3.5rem;
+    display: grid;
+    place-items: center;
+  }
+
+  .breath-orb span {
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    border: 1px solid rgb(92 108 72 / 0.5);
+    background: radial-gradient(circle, rgb(243 227 189 / 0.9), rgb(201 209 181 / 0.35) 70%);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .breath-orb span {
+      animation: breathe 10s ease-in-out infinite;
+    }
+  }
+
+  @keyframes breathe {
+    0%,
+    100% {
+      transform: scale(0.7);
+      opacity: 0.7;
+    }
+    45%,
+    55% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+</style>
